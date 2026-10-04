@@ -1,29 +1,36 @@
 import { useEffect, useRef, useState } from "react";
+
 import "./App.css";
 
 function App() {
   // ---------------- NAVIGATION ----------------
+
   const [currentPage, setCurrentPage] = useState("home");
 
   // ---------------- NOTES ----------------
+
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [aiSummary, setAiSummary] = useState("");
 
   // Load notes from localStorage
+
   const [notes, setNotes] = useState(() => {
     const savedNotes = localStorage.getItem("notes");
-
     return savedNotes ? JSON.parse(savedNotes) : [];
   });
+
+  // ID of note currently being edited
 
   const [editingId, setEditingId] = useState(null);
 
   // Reference for title input
+
   const titleInputRef = useRef(null);
 
   // Focus input when Notes page opens
+
   useEffect(() => {
     if (
       currentPage === "notes" &&
@@ -34,11 +41,13 @@ function App() {
   }, [currentPage]);
 
   // Save notes to localStorage
+
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
 
   // ---------------- ADD NOTE ----------------
+
   const addNote = () => {
     if (
       noteTitle.trim() === "" ||
@@ -52,25 +61,35 @@ function App() {
       id: Date.now(),
       title: noteTitle,
       content: noteContent,
-      date: new Date().toLocaleDateString(),
+      createdAt: new Date().toLocaleString(),
+      updatedAt: null,
     };
 
     setNotes([...notes, newNote]);
-
     setNoteTitle("");
     setNoteContent("");
   };
 
   // ---------------- DELETE NOTE ----------------
+
   const deleteNote = (id) => {
     const updatedNotes = notes.filter(
       (note) => note.id !== id
     );
 
     setNotes(updatedNotes);
+
+    // If deleted note was being edited
+
+    if (editingId === id) {
+      setNoteTitle("");
+      setNoteContent("");
+      setEditingId(null);
+    }
   };
 
   // ---------------- EDIT NOTE ----------------
+
   const editNote = (id) => {
     const noteToEdit = notes.find(
       (note) => note.id === id
@@ -82,10 +101,15 @@ function App() {
     setNoteContent(noteToEdit.content);
     setEditingId(id);
 
-    titleInputRef.current.focus();
+    // Focus title input
+
+    setTimeout(() => {
+      titleInputRef.current?.focus();
+    }, 0);
   };
 
   // ---------------- UPDATE NOTE ----------------
+
   const updateNote = () => {
     if (
       noteTitle.trim() === "" ||
@@ -101,18 +125,19 @@ function App() {
             ...note,
             title: noteTitle,
             content: noteContent,
+            updatedAt: new Date().toLocaleString(),
           }
         : note
     );
 
     setNotes(updatedNotes);
-
     setNoteTitle("");
     setNoteContent("");
     setEditingId(null);
   };
 
   // ---------------- CANCEL EDIT ----------------
+
   const cancelEdit = () => {
     setNoteTitle("");
     setNoteContent("");
@@ -120,42 +145,49 @@ function App() {
   };
 
   // ---------------- AI SUMMARY ----------------
+
   const summarizeNote = async () => {
-  if (noteContent.trim() === "") {
-    alert("Please write a note first.");
-    return;
-  }
-
-  try {
-    setAiSummary("✨ Generating AI summary...");
-
-    const response = await fetch("http://localhost:5000/api/summarize", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        note: noteContent,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Something went wrong.");
+    if (noteContent.trim() === "") {
+      alert("Please write a note first.");
+      return;
     }
 
-    setAiSummary(data.summary);
-  } catch (error) {
-    console.error(error);
-    setAiSummary("❌ Unable to generate summary. Please try again.");
-  }
-};
+    try {
+      setAiSummary("✨ Generating AI summary...");
 
- 
+      const response = await fetch(
+        "http://localhost:5000/api/summarize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            note: noteContent,
+          }),
+        }
+      );
 
-    
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Something went wrong."
+        );
+      }
+
+      setAiSummary(data.summary);
+    } catch (error) {
+      console.error(error);
+
+      setAiSummary(
+        "❌ Unable to generate summary. Please try again."
+      );
+    }
+  };
+
   // ---------------- SEARCH NOTES ----------------
+
   const filteredNotes = notes.filter(
     (note) =>
       note.title
@@ -165,6 +197,27 @@ function App() {
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
+
+  // ---------------- AI SUMMARY POINTS ----------------
+
+  const summaryPoints = aiSummary
+    ? aiSummary
+        .split(/\r?\n/)
+        .map((point) =>
+          point
+            // Remove normal bullet symbols
+            .replace(/^[-•]\s+/, "")
+
+            // Remove single * bullet but NOT **
+            .replace(/^\*(?!\*)\s+/, "")
+
+            // Remove numbered bullets like 1. or 1)
+            .replace(/^\d+[\.\)]\s+/, "")
+
+            .trim()
+        )
+        .filter((point) => point !== "")
+    : [];
 
   return (
     <div className="app">
@@ -210,9 +263,8 @@ function App() {
 
       </nav>
 
-
       {/* =====================================================
-                         HOME PAGE
+                           HOME PAGE
       ===================================================== */}
 
       {currentPage === "home" && (
@@ -245,7 +297,6 @@ function App() {
 
           </div>
 
-
           {/* FEATURES */}
 
           <div className="features">
@@ -256,7 +307,9 @@ function App() {
                 📝
               </div>
 
-              <h3>Easy Notes</h3>
+              <h3>
+                Easy Notes
+              </h3>
 
               <p>
                 Create, edit and organize your
@@ -265,21 +318,21 @@ function App() {
 
             </div>
 
-
             <div className="feature-card">
 
               <div className="feature-icon">
                 🤖
               </div>
 
-              <h3>AI Assistant</h3>
+              <h3>
+                AI Assistant
+              </h3>
 
               <p>
-                Summarize your notes .
+                Summarize your notes quickly with AI.
               </p>
 
             </div>
-
 
             <div className="feature-card">
 
@@ -287,7 +340,9 @@ function App() {
                 💾
               </div>
 
-              <h3>Auto Save</h3>
+              <h3>
+                Auto Save
+              </h3>
 
               <p>
                 Your notes are saved automatically
@@ -302,7 +357,6 @@ function App() {
 
       )}
 
-
       {/* =====================================================
                          MY NOTES PAGE
       ===================================================== */}
@@ -313,14 +367,15 @@ function App() {
 
           <div className="page-heading">
 
-            <h1>📝 My Notes</h1>
+            <h1>
+              📝 My Notes
+            </h1>
 
             <p>
               Create and organize your personal notes.
             </p>
 
           </div>
-
 
           {/* INPUT SECTION */}
 
@@ -350,6 +405,7 @@ function App() {
               {noteContent.length}/500 characters
             </p>
 
+            {/* ADD / UPDATE BUTTON */}
 
             {editingId === null ? (
 
@@ -361,12 +417,15 @@ function App() {
 
               <div className="edit-actions">
 
-                <button onClick={updateNote}>
+                <button
+                  className="update-note-btn"
+                  onClick={updateNote}
+                >
                   ✓ Update Note
                 </button>
 
                 <button
-                  className="cancel-btn"
+                  className="cancel-edit-btn"
                   onClick={cancelEdit}
                 >
                   ✕ Cancel
@@ -377,7 +436,6 @@ function App() {
             )}
 
           </section>
-
 
           {/* NOTES LIST */}
 
@@ -395,7 +453,6 @@ function App() {
 
             </div>
 
-
             {/* SEARCH */}
 
             {notes.length > 0 && (
@@ -411,7 +468,6 @@ function App() {
               />
 
             )}
-
 
             {/* EMPTY STATE */}
 
@@ -468,9 +524,22 @@ function App() {
                         {note.title}
                       </h3>
 
-                      <span>
-                        {note.date}
-                      </span>
+                      <div className="note-dates">
+
+                        <span>
+                          📅 Created:{" "}
+                          {note.createdAt || note.date}
+                        </span>
+
+                        {note.updatedAt && (
+
+                          <span>
+                            🔄 Updated: {note.updatedAt}
+                          </span>
+
+                        )}
+
+                      </div>
 
                     </div>
 
@@ -478,18 +547,23 @@ function App() {
                       {note.content}
                     </p>
 
+                    {/* NOTE ACTIONS */}
 
                     <div className="note-actions">
-  <button className="edit-btn" onClick={() => editNote(note)}>
-    ✏️ Edit
-  </button>
 
-  <button className="delete-btn" onClick={() => deleteNote(note.id)}>
-    🗑️ Delete
-  </button>
+                      <button
+                        className="edit-btn"
+                        onClick={() => editNote(note.id)}
+                      >
+                        ✏️ Edit
+                      </button>
 
-
-                     
+                      <button
+                        className="delete-btn"
+                        onClick={() => deleteNote(note.id)}
+                      >
+                        🗑️ Delete
+                      </button>
 
                     </div>
 
@@ -507,9 +581,8 @@ function App() {
 
       )}
 
-
       {/* =====================================================
-                       AI ASSISTANT PAGE
+                      AI ASSISTANT PAGE
       ===================================================== */}
 
       {currentPage === "ai" && (
@@ -518,14 +591,15 @@ function App() {
 
           <div className="page-heading">
 
-            <h1>🤖 AI Notes Assistant</h1>
+            <h1>
+              🤖 AI Notes Assistant
+            </h1>
 
             <p>
               Make your notes smarter with AI-powered tools.
             </p>
 
           </div>
-
 
           <div className="ai-section">
 
@@ -535,9 +609,8 @@ function App() {
 
             <p>
               Write your note below and use the AI
-              tools to summarize it .
+              tools to summarize it.
             </p>
-
 
             <textarea
               className="ai-textarea"
@@ -549,7 +622,6 @@ function App() {
               }
             />
 
-
             <div className="ai-buttons">
 
               <button
@@ -559,9 +631,9 @@ function App() {
                 ✨ Summarize Note
               </button>
 
-             
             </div>
 
+            {/* AI SUMMARY */}
 
             <div className="ai-result">
 
@@ -569,10 +641,71 @@ function App() {
                 💡 AI Summary
               </h3>
 
-              <p>
-                {aiSummary ||
-                  "Your AI-generated summary will appear here."}
-              </p>
+              {!aiSummary ? (
+
+                <p>
+                  Your AI-generated summary will appear here.
+                </p>
+
+              ) : aiSummary.startsWith("✨") ||
+                aiSummary.startsWith("❌") ? (
+
+                <p>
+                  {aiSummary}
+                </p>
+
+              ) : (
+
+                <ul className="summary-list">
+
+                  {summaryPoints.map((point, index) => {
+
+                    // Split text around **bold text**
+                    const parts = point.split(
+                      /(\*\*.*?\*\*)/g
+                    );
+
+                    return (
+
+                      <li key={index}>
+
+                        {parts.map(
+                          (part, partIndex) => {
+
+                            // If text is between **
+                            if (
+                              part.startsWith("**") &&
+                              part.endsWith("**")
+                            ) {
+
+                              return (
+
+                                <strong key={partIndex}>
+                                  {part.slice(2, -2)}
+                                </strong>
+
+                              );
+
+                            }
+
+                            return (
+                              <span key={partIndex}>
+                                {part}
+                              </span>
+                            );
+
+                          }
+                        )}
+
+                      </li>
+
+                    );
+
+                  })}
+
+                </ul>
+
+              )}
 
             </div>
 
@@ -582,9 +715,8 @@ function App() {
 
       )}
 
-
       {/* =====================================================
-                           ABOUT PAGE
+                         ABOUT PAGE
       ===================================================== */}
 
       {currentPage === "about" && (
@@ -604,7 +736,6 @@ function App() {
 
           </div>
 
-
           <div className="about-card">
 
             <h2>
@@ -617,7 +748,6 @@ function App() {
               search and manage their everyday thoughts
               and important information.
             </p>
-
 
             <h2>
               🛠️ Technologies Used

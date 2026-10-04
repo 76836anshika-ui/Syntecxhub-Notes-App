@@ -40,8 +40,16 @@ app.post("/api/summarize", async (req, res) => {
 
     const interaction = await ai.interactions.create({
       model: "gemini-3.8-flash",
-      input: `Summarize this note in simple language:
+      input: `Summarize this note in 3 to 5 short and clear bullet points.
 
+Rules:
+- Use bullet points only.
+- Each point should be short and easy to understand.
+- Do not write a paragraph.
+- Do not add unnecessary information.
+- Start each point with "-".
+
+Note:
 ${note}`,
     });
 

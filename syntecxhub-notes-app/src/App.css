@@ -981,4 +981,68 @@ button {
   .note-card {
     padding: 21px;
   }
+
+  /* Edit Mode Buttons */
+/* =========================
+   EDIT MODE BUTTONS
+========================= */
+
+.edit-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+/* Update Note */
+.update-note-btn {
+  flex: 1;
+  border: none;
+  padding: 13px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(79, 70, 229, 0.25);
+  transition: all 0.25s ease;
+}
+
+.update-note-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+}
+
+.update-note-btn:active {
+  transform: translateY(0);
+}
+
+
+/* Cancel */
+.cancel-edit-btn {
+  flex: 1;
+  border: 1.5px solid #1e4b8f;
+  padding: 13px 20px;
+  border-radius: 10px;
+  background: #5d3380;
+  color: #8b1a3c;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.cancel-edit-btn:hover {
+  background: #1ba593;
+  border-color: #1f8365;
+  color: #ca1de1;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(225, 29, 72, 0.12);
+}
+
+.cancel-edit-btn:active {
+  transform: translateY(0);
+}
 }
