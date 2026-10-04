@@ -1,16 +1,95 @@
-# React + Vite
+# 📝 NoteFlow – AI-Powered Notes App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+NoteFlow is a modern and responsive notes management web application built using **React.js**. It allows users to create, edit, delete, search, and store notes directly in the browser.
 
-Currently, two official plugins are available:
+The application also includes an **AI Assistant** powered by **Google Gemini API** that can summarize notes quickly in simple language.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This project was developed as part of the **Syntecxhub Web Development Internship – Week 1 Project**.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Live Features
 
-## Expanding the ESLint configuration
+### 🏠 Home
+- Attractive landing page
+- Introduction to the application
+- Overview of major features
+- Easy navigation to Notes and AI Assistant
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 📝 My Notes
+- Create new notes
+- Edit existing notes
+- Delete notes
+- Search notes
+- Character counter
+- Maximum 500 characters per note
+- Automatic date/time display
+- Notes remain saved after refreshing the browser
+
+### 🤖 AI Assistant
+- Enter note content
+- Generate an AI-powered summary
+- Uses Google Gemini API
+- Provides summaries in simple language
+
+### 💾 Data Persistence
+Notes are stored using **Browser Local Storage**, so saved notes remain available even after refreshing the page.
+
+---
+
+## 🛠️ Technologies Used
+
+### Frontend
+- React.js
+- JavaScript
+- HTML5
+- CSS3
+- Vite
+
+### React Concepts
+- `useState`
+- `useEffect`
+- `useRef`
+
+### Backend
+- Node.js
+- Express.js
+- CORS
+- dotenv
+
+### AI
+- Google Gemini API
+
+### Storage
+- Browser Local Storage
+
+### Development Tools
+- Visual Studio Code
+- Git
+- GitHub
+- PowerShell
+
+---
+
+## 📂 Project Structure
+
+```text
+syntecxhub-notes-app/
+│
+├── public/
+│
+├── src/
+│   ├── App.jsx
+│   ├── App.css
+│   ├── main.jsx
+│   └── ...
+│
+├── server/
+│   ├── server.js
+│   ├── package.json
+│   └── .env
+│
+├── .gitignore
+├── package.json
+├── package-lock.json
+└── README.md
